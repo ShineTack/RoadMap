@@ -51,6 +51,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Models\Models.csproj">
+      <Project>{1ea9a176-5e91-448d-9930-5b2ed702b076}</Project>
+      <Name>Models</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ProcedureInjectionFramework\ProcedureInjectionFramework.csproj">
       <Project>{da3e62ae-dd01-49df-b226-a3d53b1e7a83}</Project>
       <Name>ProcedureInjectionFramework</Name>
