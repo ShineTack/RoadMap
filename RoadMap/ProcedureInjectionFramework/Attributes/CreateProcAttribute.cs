@@ -8,6 +8,11 @@ namespace ProcedureInjectionFramework.Attributes
 {
     public class CreateProcAttribute : Attribute
     {
+        public string ProcName { get; private set; }
 
+        public CreateProcAttribute(string procName)
+        {
+            ProcName = procName;
+        }
     }
 }

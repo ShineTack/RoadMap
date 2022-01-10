@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace ProcedureInjectionFramework.Core.Classes
 {
     [Serializable]
-    internal class DataStorage
+    public class DataStorage
     {
         public DataStorage(string connectionString, List<CRUDProc> procs)
         {
@@ -15,8 +15,13 @@ namespace ProcedureInjectionFramework.Core.Classes
             this.procs = procs;
         }
 
-        public string ConnectionString { get; private set; }
-        public List<CRUDProc> procs { get; private set; }
+        public DataStorage()
+        {
+
+        }
+
+        public string ConnectionString { get; set; }
+        public List<CRUDProc> procs { get; set; }
 
 
     }

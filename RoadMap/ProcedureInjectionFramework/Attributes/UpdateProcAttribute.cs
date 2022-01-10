@@ -6,7 +6,13 @@ using System.Threading.Tasks;
 
 namespace ProcedureInjectionFramework.Attributes
 {
-    class UpdateProcAttribute
+    public class UpdateProcAttribute : Attribute
     {
+        public string ProcName { get; private set; }
+
+        public UpdateProcAttribute(string procName)
+        {
+            ProcName = procName;
+        }
     }
 }

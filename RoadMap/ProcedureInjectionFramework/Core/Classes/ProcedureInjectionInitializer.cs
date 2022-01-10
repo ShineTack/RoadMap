@@ -14,16 +14,17 @@ namespace ProcedureInjectionFramework.Core.Classes
     {
         DataStorage dataStorage = null;
 
-        public ProcedureInjectionInitializer(string connectionString)
+        public ProcedureInjectionInitializer(string connectionString, Type[] types)
         {  
             if(IsConfigurationFileExists())
             {
-
+                FileStream fileStream = File.OpenRead("ProcConfiguration.xml");
+                XmlSerializer reader = new XmlSerializer(typeof(DataStorage));
+                dataStorage = (DataStorage)reader.Deserialize(fileStream);
+                fileStream.Close();
             }
             else
             {
-                File.Create("ProcConfiguration.xml");
-                Type[] types = Assembly.GetExecutingAssembly().GetTypes();
                 List<Type> modelTypes = (from type in types
                                          where type.CustomAttributes.Any(attr => attr.AttributeType == typeof(ModelAttribute))
                                          select type).ToList();
@@ -32,51 +33,54 @@ namespace ProcedureInjectionFramework.Core.Classes
                 {
                     CRUDProc proc = new CRUDProc();
                     proc.ModelName = modelType.Name;
-                    if(modelType.GetCustomAttribute(typeof(CreateProcAttribute)) != null)
+                    foreach(Attribute attribute in modelType.GetCustomAttributes(true))
                     {
-                        proc.CreateProc = modelType.GetCustomAttribute(typeof(CreateProcAttribute))
-                            .GetType()
-                            .GetProperty("ProcName")
-                            .GetValue(modelType).ToString();
-                    }
-                    if (modelType.GetCustomAttribute(typeof(ReadProcAttribute)) != null)
-                    {
-                        proc.ReadProc = modelType.GetCustomAttribute(typeof(ReadProcAttribute))
-                            .GetType()
-                            .GetProperty("ProcName")
-                            .GetValue(modelType).ToString();
-                    }
-                    if (modelType.GetCustomAttribute(typeof(UpdateProcAttribute)) != null)
-                    {
-                        proc.UpdateProc = modelType.GetCustomAttribute(typeof(UpdateProcAttribute))
-                            .GetType()
-                            .GetProperty("ProcName")
-                            .GetValue(modelType).ToString();
-                    }
-                    if (modelType.GetCustomAttribute(typeof(DeleteProcAttribute)) != null)
-                    {
-                        proc.DeleteProc = modelType.GetCustomAttribute(typeof(DeleteProcAttribute))
-                            .GetType()
-                            .GetProperty("ProcName")
-                            .GetValue(modelType).ToString();
+                        if (attribute is CreateProcAttribute create)
+                        {
+                            proc.CreateProc = create.ProcName;
+                        }
+                        else if (attribute is ReadProcAttribute read)
+                        {
+                            proc.ReadProc = read.ProcName;
+                        }
+                        else if (attribute is UpdateProcAttribute update)
+                        {
+                            proc.UpdateProc = update.ProcName;
+                        }
+                        else if (attribute is DeleteProcAttribute delete)
+                        {
+                            proc.DeleteProc = delete.ProcName;
+                        }
                     }
                     procs.Add(proc);
                 }
                 dataStorage = new DataStorage(connectionString, procs);
 
-                XmlSerializer writer = new XmlSerializer(typeof(DataStorage));
+                try
+                {
+                    XmlSerializer writer = new XmlSerializer(typeof(DataStorage));
 
-                var path = "ProcConfiguration.xml";
-                FileStream file = File.Create(path);
+                    var path = "ProcConfiguration.xml";
+                    FileStream file = File.Create(path);
 
-                writer.Serialize(file, "Proc Configuration");
-                file.Close();
+                    writer.Serialize(file, dataStorage);
+                    file.Close();
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
             }
         }
 
         private bool IsConfigurationFileExists()
         {
             return File.Exists("ProcConfiguration.xml");
+        }
+
+        public CRUDRepository GetCRUDRepository()
+        {
+            return new CRUDRepository(dataStorage);
         }
     }
 }

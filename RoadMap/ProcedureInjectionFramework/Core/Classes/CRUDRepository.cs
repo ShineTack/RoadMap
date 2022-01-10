@@ -20,14 +20,12 @@ namespace ProcedureInjectionFramework.Core.Classes
         public void Create<T>(T model)
         {
             SqlConnection conn = new SqlConnection(_dataStorage.ConnectionString);
-            string commandName = (from crudObject in _dataStorage.procs
-                                 where crudObject.ModelName == model.GetType().Name
-                                 select crudObject.CreateProc).ToString();
+            string commandName = _dataStorage.procs.Where(proc => proc.ModelName == model.GetType().Name).Select(proc => proc.CreateProc).ToArray()[0];
             string xmlParameter = "";
             using (var stringwriter = new System.IO.StringWriter())
             {
                 var serializer = new XmlSerializer(model.GetType());
-                serializer.Serialize(stringwriter, this);
+                serializer.Serialize(stringwriter, model);
                 xmlParameter = stringwriter.ToString();
             }
             SqlCommand cmd = new SqlCommand(commandName, conn);
@@ -35,11 +33,16 @@ namespace ProcedureInjectionFramework.Core.Classes
             cmd.Parameters.Add(new SqlParameter("@xmlData", xmlParameter));
             try
             {
+                conn.Open();
                 cmd.ExecuteNonQuery();
             }
             catch(Exception ex)
             {
                 Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                conn.Close();
             }
         }
     }

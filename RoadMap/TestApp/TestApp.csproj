@@ -4,16 +4,17 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{DA3E62AE-DD01-49DF-B226-A3D53B1E7A83}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ProcedureInjectionFramework</RootNamespace>
-    <AssemblyName>ProcedureInjectionFramework</AssemblyName>
+    <ProjectGuid>{148DE165-2ACD-43D3-AD2F-5E401BD6ED78}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>TestApp</RootNamespace>
+    <AssemblyName>TestApp</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -23,6 +24,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -41,16 +43,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Attributes\CreateProcAttribute.cs" />
-    <Compile Include="Attributes\DeleteProcAttribute.cs" />
-    <Compile Include="Attributes\ModelAttribute.cs" />
-    <Compile Include="Attributes\ReadAttribute.cs" />
-    <Compile Include="Attributes\UpdateProcAttribute.cs" />
-    <Compile Include="Core\Classes\CRUDProc.cs" />
-    <Compile Include="Core\Classes\CRUDRepository.cs" />
-    <Compile Include="Core\Classes\DataStorage.cs" />
-    <Compile Include="Core\Classes\ProcedureInjectionInitializer.cs" />
+    <Compile Include="Model.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ProcedureInjectionFramework\ProcedureInjectionFramework.csproj">
+      <Project>{da3e62ae-dd01-49df-b226-a3d53b1e7a83}</Project>
+      <Name>ProcedureInjectionFramework</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

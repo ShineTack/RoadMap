@@ -3,7 +3,7 @@
 namespace ProcedureInjectionFramework.Core.Classes
 {
     [Serializable]
-    internal class CRUDProc
+    public class CRUDProc
     {
         public string ModelName { get; set; }
         public string CreateProc { get; set; }
