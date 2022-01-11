@@ -126,7 +126,7 @@ BEGIN
     FROM @xmlData.nodes('/Data') t(n)
     
     SET @xmlResult = CAST(
-        (SELECT id as 'Id', [type] AS 'Type' FROM CityType FOR XML PATH('CityType')) AS nvarchar(4000))
+        (SELECT id as 'Id', [type] AS 'Type' FROM CityType  WHERE id = @Id FOR XML PATH('CityType')) AS nvarchar(4000))
 END
 
 CREATE PROCEDURE [dbo].[proc_CityType@ReadAll] @xmlResult nvarchar(4000) OUTPUT 
@@ -180,7 +180,7 @@ BEGIN
     FROM @xmlData.nodes('/Data') t(n)
     
     SET @xmlResult = CAST(
-        (SELECT id as 'Id', [name] AS 'Name' FROM City FOR XML PATH('CityName')) AS nvarchar(4000))
+        (SELECT id as 'Id', [name] AS 'Name' FROM City WHERE id = @Id FOR XML PATH('CityName')) AS nvarchar(4000))
 END
 
 CREATE PROCEDURE [dbo].[proc_CityName@ReadAll] @xmlResult nvarchar(4000) OUTPUT 
@@ -234,7 +234,7 @@ BEGIN
     FROM @xmlData.nodes('/Data') t(n)
     
     SET @xmlResult = CAST(
-        (SELECT id as 'Id', [name] AS 'Name' FROM Region FOR XML PATH('Region')) AS nvarchar(4000))
+        (SELECT id as 'Id', [name] AS 'Name' FROM Region WHERE id = @Id FOR XML PATH('Region')) AS nvarchar(4000))
 END
 
 CREATE PROCEDURE [dbo].[proc_Region@ReadAll] @xmlResult nvarchar(4000) OUTPUT 
@@ -288,7 +288,7 @@ BEGIN
     FROM @xmlData.nodes('/Data') t(n)
     
     SET @xmlResult = CAST(
-        (SELECT id as 'Id', [name] AS 'Name' FROM StreetName FOR XML PATH('StreetName')) AS nvarchar(4000))
+        (SELECT id as 'Id', [name] AS 'Name' FROM StreetName WHERE id = @Id FOR XML PATH('StreetName')) AS nvarchar(4000))
 END
 
 CREATE PROCEDURE [dbo].[proc_StreetName@ReadAll] @xmlResult nvarchar(4000) OUTPUT 
@@ -342,7 +342,7 @@ BEGIN
     FROM @xmlData.nodes('/Data') t(n)
     
     SET @xmlResult = CAST(
-        (SELECT id as 'Id', [type] AS 'Type' FROM StreetType FOR XML PATH('StreetType')) AS nvarchar(4000))
+        (SELECT id as 'Id', [type] AS 'Type' FROM StreetType WHERE id = @Id FOR XML PATH('StreetType')) AS nvarchar(4000))
 END
 
 CREATE PROCEDURE [dbo].[proc_StreetType@ReadAll] @xmlResult nvarchar(4000) OUTPUT 
@@ -396,7 +396,7 @@ BEGIN
     FROM @xmlData.nodes('/Data') t(n)
     
     SET @xmlResult = CAST(
-        (SELECT id as 'Id', [number] AS 'Number' FROM BuildingNumber FOR XML PATH('BuildingNumber')) AS nvarchar(4000))
+        (SELECT id as 'Id', [number] AS 'Number' FROM BuildingNumber WHERE id = @Id FOR XML PATH('BuildingNumber')) AS nvarchar(4000))
 END
 
 CREATE PROCEDURE [dbo].[proc_BuildingNumber@ReadAll] @xmlResult nvarchar(4000) OUTPUT 
