@@ -105,6 +105,18 @@ BEGIN
 	 FOR XML PATH('Address'), ROOT('Addresses')) as nvarchar(4000)) + '</Data>'
 END
 
+
+-- City Type
+CREATE PROCEDURE [dbo].[proc_CityType@Create] @xmlData xml
+AS
+BEGIN
+	DECLARE @Type nvarchar(50)
+
+	SET @Type = CAST((SELECT n.value('(./Type)[1]', 'nvarchar(50)') FROM @xmlData.nodes('/CityType') t(n)) AS nvarchar(50))
+
+	INSERT INTO CityType ([type]) VALUES (@Type) 
+END
+
 CREATE PROCEDURE [dbo].[proc_CityType@Read] @xmlData xml, @xmlResult nvarchar(4000) OUTPUT 
 AS
 BEGIN
@@ -148,7 +160,274 @@ BEGIN
 
 	DELETE FROM CityType WHERE id = @Id
 END
+-- City Name
+CREATE PROCEDURE [dbo].[proc_CityName@Create] @xmlData xml
+AS
+BEGIN
+	DECLARE @Name nvarchar(50)
 
+	SET @Name = CAST((SELECT n.value('(./Name)[1]', 'nvarchar(50)') FROM @xmlData.nodes('/CityName') t(n)) AS nvarchar(50))
 
+	INSERT INTO City ([name]) VALUES (@Name)
+END
 
+CREATE PROCEDURE [dbo].[proc_CityName@Read] @xmlData xml, @xmlResult nvarchar(4000) OUTPUT 
+AS
+BEGIN
+    DECLARE @Id int
+
+    SELECT @Id = CAST(n.value('(./value)[1]', 'int') AS int)
+    FROM @xmlData.nodes('/Data') t(n)
+    
+    SET @xmlResult = CAST(
+        (SELECT id as 'Id', [name] AS 'Name' FROM City FOR XML PATH('CityName')) AS nvarchar(4000))
+END
+
+CREATE PROCEDURE [dbo].[proc_CityName@ReadAll] @xmlResult nvarchar(4000) OUTPUT 
+AS
+BEGIN
+    SET @xmlResult = CAST(
+            (SELECT id as 'Id', [name] AS 'Type' FROM City FOR XML PATH('CityName'), ROOT('Data')) AS nvarchar(4000))
+END
+
+CREATE PROCEDURE [dbo].[proc_CityName@Update] @xmlData xml
+AS
+BEGIN
+	DECLARE @Name nvarchar(50),
+			@Id int
+
+	SELECT
+		@Id = CAST(n.value('(./Id)[1]', 'int') AS int),
+		@Name = CAST(n.value('(./Name)[1]', 'nvarchar(50)') AS nvarchar(50))
+	FROM @xmlData.nodes('/CityName') t(n)
+
+	UPDATE City SET [name] = @Name WHERE id = @Id
+END
+
+CREATE PROCEDURE [dbo].[proc_CityName@Delete] @xmlData xml
+AS
+BEGIN
+	DECLARE @Id int
+
+	SELECT @Id = CAST(n.value('(./value)[1]', 'int') AS int)
+    FROM @xmlData.nodes('/Data') t(n)
+
+	DELETE FROM City WHERE id = @Id
+END
+--Region
+CREATE PROCEDURE [dbo].[proc_Region@Create] @xmlData xml
+AS
+BEGIN
+	DECLARE @Name nvarchar(50)
+
+	SET @Name = CAST((SELECT n.value('(./Name)[1]', 'nvarchar(50)') FROM @xmlData.nodes('/Region') t(n)) AS nvarchar(50))
+
+	INSERT INTO Region ([name]) VALUES (@Name)
+END
+
+CREATE PROCEDURE [dbo].[proc_Region@Read] @xmlData xml, @xmlResult nvarchar(4000) OUTPUT 
+AS
+BEGIN
+    DECLARE @Id int
+
+    SELECT @Id = CAST(n.value('(./value)[1]', 'int') AS int)
+    FROM @xmlData.nodes('/Data') t(n)
+    
+    SET @xmlResult = CAST(
+        (SELECT id as 'Id', [name] AS 'Name' FROM Region FOR XML PATH('Region')) AS nvarchar(4000))
+END
+
+CREATE PROCEDURE [dbo].[proc_Region@ReadAll] @xmlResult nvarchar(4000) OUTPUT 
+AS
+BEGIN
+    SET @xmlResult = CAST(
+            (SELECT id as 'Id', [type] AS 'Type' FROM CityType FOR XML PATH('CityType'), ROOT('Data')) AS nvarchar(4000))
+END
+
+CREATE PROCEDURE [dbo].[proc_Region@Update] @xmlData xml
+AS
+BEGIN
+	DECLARE @Name nvarchar(50),
+			@Id int
+
+	SELECT
+		@Id = CAST(n.value('(./Id)[1]', 'int') AS int),
+		@Name = CAST(n.value('(./Name)[1]', 'nvarchar(50)') AS nvarchar(50))
+	FROM @xmlData.nodes('/Region') t(n)
+
+	UPDATE Region SET [name] = @Name WHERE id = @Id
+END
+
+CREATE PROCEDURE [dbo].[proc_Region@Delete] @xmlData xml
+AS
+BEGIN
+	DECLARE @Id int
+
+	SELECT @Id = CAST(n.value('(./value)[1]', 'int') AS int)
+    FROM @xmlData.nodes('/Data') t(n)
+
+	DELETE FROM Region WHERE id = @Id
+END
+--Street Name
+CREATE PROCEDURE [dbo].[proc_StreetName@Create] @xmlData xml
+AS
+BEGIN
+	DECLARE @Name nvarchar(50)
+
+	SET @Name = CAST((SELECT n.value('(./Name)[1]', 'nvarchar(50)') FROM @xmlData.nodes('/StreetName') t(n)) AS nvarchar(50))
+
+	INSERT INTO StreetName ([name]) VALUES (@Name)
+END
+
+CREATE PROCEDURE [dbo].[proc_StreetName@Read] @xmlData xml, @xmlResult nvarchar(4000) OUTPUT 
+AS
+BEGIN
+    DECLARE @Id int
+
+    SELECT @Id = CAST(n.value('(./value)[1]', 'int') AS int)
+    FROM @xmlData.nodes('/Data') t(n)
+    
+    SET @xmlResult = CAST(
+        (SELECT id as 'Id', [name] AS 'Name' FROM StreetName FOR XML PATH('StreetName')) AS nvarchar(4000))
+END
+
+CREATE PROCEDURE [dbo].[proc_StreetName@ReadAll] @xmlResult nvarchar(4000) OUTPUT 
+AS
+BEGIN
+    SET @xmlResult = CAST(
+            (SELECT id as 'Id', [name] AS 'Name' FROM StreetName FOR XML PATH('StreetName'), ROOT('Data')) AS nvarchar(4000))
+END
+
+CREATE PROCEDURE [dbo].[proc_StreetName@Update] @xmlData xml
+AS
+BEGIN
+	DECLARE @Name nvarchar(50),
+			@Id int
+
+	SELECT
+		@Id = CAST(n.value('(./Id)[1]', 'int') AS int),
+		@Name = CAST(n.value('(./Name)[1]', 'nvarchar(50)') AS nvarchar(50))
+	FROM @xmlData.nodes('/StreetName') t(n)
+
+	UPDATE StreetName SET [name] = @Name WHERE id = @Id
+END
+
+CREATE PROCEDURE [dbo].[proc_StreetName@Delete] @xmlData xml
+AS
+BEGIN
+	DECLARE @Id int
+
+	SELECT @Id = CAST(n.value('(./value)[1]', 'int') AS int)
+    FROM @xmlData.nodes('/Data') t(n)
+
+	DELETE FROM StreetName WHERE id = @Id
+END
+--Street Type
+CREATE PROCEDURE [dbo].[proc_StreetType@Create] @xmlData xml
+AS
+BEGIN
+	DECLARE @Type nvarchar(50)
+
+	SET @Type = CAST((SELECT n.value('(./Type)[1]', 'nvarchar(50)') FROM @xmlData.nodes('/StreetType') t(n)) AS nvarchar(50))
+
+	INSERT INTO StreetType ([type]) VALUES (@Type)
+END
+
+CREATE PROCEDURE [dbo].[proc_StreetType@Read] @xmlData xml, @xmlResult nvarchar(4000) OUTPUT 
+AS
+BEGIN
+    DECLARE @Id int
+
+    SELECT @Id = CAST(n.value('(./value)[1]', 'int') AS int)
+    FROM @xmlData.nodes('/Data') t(n)
+    
+    SET @xmlResult = CAST(
+        (SELECT id as 'Id', [type] AS 'Type' FROM StreetType FOR XML PATH('StreetType')) AS nvarchar(4000))
+END
+
+CREATE PROCEDURE [dbo].[proc_StreetType@ReadAll] @xmlResult nvarchar(4000) OUTPUT 
+AS
+BEGIN
+    SET @xmlResult = CAST(
+            (SELECT id as 'Id', [type] AS 'Type' FROM StreetType FOR XML PATH('StreetType'), ROOT('Data')) AS nvarchar(4000))
+END
+
+CREATE PROCEDURE [dbo].[proc_StreetType@Update] @xmlData xml
+AS
+BEGIN
+	DECLARE @Type nvarchar(50),
+			@Id int
+
+	SELECT
+		@Id = CAST(n.value('(./Id)[1]', 'int') AS int),
+		@Type = CAST(n.value('(./Type)[1]', 'nvarchar(50)') AS nvarchar(50))
+	FROM @xmlData.nodes('/StreetType') t(n)
+
+	UPDATE StreetType SET [type] = @Type WHERE id = @Id
+END
+
+CREATE PROCEDURE [dbo].[proc_StreetType@Delete] @xmlData xml
+AS
+BEGIN
+	DECLARE @Id int
+
+	SELECT @Id = CAST(n.value('(./value)[1]', 'int') AS int)
+    FROM @xmlData.nodes('/Data') t(n)
+
+	DELETE FROM StreetType WHERE id = @Id
+END
+-- BUILDING NUMBER
+CREATE PROCEDURE [dbo].[proc_BuildingNumber@Create] @xmlData xml
+AS
+BEGIN
+	DECLARE @Number nvarchar(50)
+
+	SET @Number = CAST((SELECT n.value('(./Number)[1]', 'nvarchar(50)') FROM @xmlData.nodes('/BuildingNumber') t(n)) AS nvarchar(50))
+
+	INSERT INTO BuildingNumber (number) VALUES (@Number)
+END
+
+CREATE PROCEDURE [dbo].[proc_BuildingNumber@Read] @xmlData xml, @xmlResult nvarchar(4000) OUTPUT 
+AS
+BEGIN
+    DECLARE @Id int
+
+    SELECT @Id = CAST(n.value('(./value)[1]', 'int') AS int)
+    FROM @xmlData.nodes('/Data') t(n)
+    
+    SET @xmlResult = CAST(
+        (SELECT id as 'Id', [number] AS 'Number' FROM BuildingNumber FOR XML PATH('BuildingNumber')) AS nvarchar(4000))
+END
+
+CREATE PROCEDURE [dbo].[proc_BuildingNumber@ReadAll] @xmlResult nvarchar(4000) OUTPUT 
+AS
+BEGIN
+    SET @xmlResult = CAST(
+            (SELECT id as 'Id', [number] AS 'Type' FROM BuildingNumber FOR XML PATH('BuildingNumber'), ROOT('Data')) AS nvarchar(4000))
+END
+
+CREATE PROCEDURE [dbo].[proc_BuildingNumber@Update] @xmlData xml
+AS
+BEGIN
+	DECLARE @Number nvarchar(50),
+			@Id int
+
+	SELECT
+		@Id = CAST(n.value('(./Id)[1]', 'int') AS int),
+		@Number = CAST(n.value('(./Number)[1]', 'nvarchar(50)') AS nvarchar(50))
+	FROM @xmlData.nodes('/BuildingNumber') t(n)
+
+	UPDATE CityType SET [type] = @Number WHERE id = @Id
+END
+
+CREATE PROCEDURE [dbo].[proc_BuildingNumber@Delete] @xmlData xml
+AS
+BEGIN
+	DECLARE @Id int
+
+	SELECT @Id = CAST(n.value('(./value)[1]', 'int') AS int)
+    FROM @xmlData.nodes('/Data') t(n)
+
+	DELETE FROM BuildingNumber WHERE id = @Id
+END
 
