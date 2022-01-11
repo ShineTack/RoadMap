@@ -43,7 +43,9 @@
   <ItemGroup>
     <Compile Include="Attributes\CreateProcAttribute.cs" />
     <Compile Include="Attributes\DeleteProcAttribute.cs" />
+    <Compile Include="Attributes\IDataAttribute.cs" />
     <Compile Include="Attributes\ModelAttribute.cs" />
+    <Compile Include="Attributes\ReadAllAttribute.cs" />
     <Compile Include="Attributes\ReadAttribute.cs" />
     <Compile Include="Attributes\UpdateProcAttribute.cs" />
     <Compile Include="Core\Classes\CRUDProc.cs" />

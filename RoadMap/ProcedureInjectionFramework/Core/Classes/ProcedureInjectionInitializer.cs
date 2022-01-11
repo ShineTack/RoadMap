@@ -35,21 +35,9 @@ namespace ProcedureInjectionFramework.Core.Classes
                     proc.ModelName = modelType.Name;
                     foreach(Attribute attribute in modelType.GetCustomAttributes(true))
                     {
-                        if (attribute is CreateProcAttribute create)
+                        if (attribute is IDataAttribute dataAttribute)
                         {
-                            proc.CreateProc = create.ProcName;
-                        }
-                        else if (attribute is ReadProcAttribute read)
-                        {
-                            proc.ReadProc = read.ProcName;
-                        }
-                        else if (attribute is UpdateProcAttribute update)
-                        {
-                            proc.UpdateProc = update.ProcName;
-                        }
-                        else if (attribute is DeleteProcAttribute delete)
-                        {
-                            proc.DeleteProc = delete.ProcName;
+                            dataAttribute.SetProcValue(proc);
                         }
                     }
                     procs.Add(proc);
@@ -59,10 +47,8 @@ namespace ProcedureInjectionFramework.Core.Classes
                 try
                 {
                     XmlSerializer writer = new XmlSerializer(typeof(DataStorage));
-
                     var path = "ProcConfiguration.xml";
                     FileStream file = File.Create(path);
-
                     writer.Serialize(file, dataStorage);
                     file.Close();
                 }
