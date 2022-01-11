@@ -241,7 +241,7 @@ CREATE PROCEDURE [dbo].[proc_Region@ReadAll] @xmlResult nvarchar(4000) OUTPUT
 AS
 BEGIN
     SET @xmlResult = CAST(
-            (SELECT id as 'Id', [type] AS 'Type' FROM CityType FOR XML PATH('CityType'), ROOT('Data')) AS nvarchar(4000))
+            (SELECT id as 'Id', [type] AS 'Name' FROM CityType FOR XML PATH('Region'), ROOT('Data')) AS nvarchar(4000))
 END
 
 CREATE PROCEDURE [dbo].[proc_Region@Update] @xmlData xml
