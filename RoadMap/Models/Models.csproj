@@ -41,11 +41,17 @@
         <Compile Include="Classes\Address.cs" />
         <Compile Include="Classes\Addresses.cs" />
         <Compile Include="Classes\BuildingNumber.cs" />
+        <Compile Include="Classes\BuildingNumbers.cs" />
         <Compile Include="Classes\CityName.cs" />
+        <Compile Include="Classes\CityNames.cs" />
         <Compile Include="Classes\CityType.cs" />
+        <Compile Include="Classes\CityTypes.cs" />
         <Compile Include="Classes\Region.cs" />
+        <Compile Include="Classes\Regions.cs" />
         <Compile Include="Classes\StreetName.cs" />
+        <Compile Include="Classes\StreetNames.cs" />
         <Compile Include="Classes\StreetType.cs" />
+        <Compile Include="Classes\StreetTypes.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
     </ItemGroup>
     <ItemGroup>

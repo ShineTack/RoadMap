@@ -12,6 +12,6 @@ namespace Models.Classes
     public class Addresses
     {
         [XmlElement(ElementName = "Addresses", Type = typeof(List<Address>))]
-        public List<Address> AllAdresses { get; set; }
+        public List<Address> AllAddresses { get; set; }
     }
 }

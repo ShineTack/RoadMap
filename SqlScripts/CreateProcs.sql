@@ -129,11 +129,17 @@ BEGIN
         (SELECT id as 'Id', [type] AS 'Type' FROM CityType  WHERE id = @Id FOR XML PATH('CityType')) AS nvarchar(4000))
 END
 
+CREATE PROCEDURE [dbo].[proc_CityType@Read2] @xmlData xml, @xmlResult nvarchar(4000) OUTPUT
+AS
+BEGIN
+	SET @xmlResult = '<CityType><Id>12345</Id><Type>Test Type</Type></CityType>'
+END
+
 CREATE PROCEDURE [dbo].[proc_CityType@ReadAll] @xmlResult nvarchar(4000) OUTPUT 
 AS
 BEGIN
-    SET @xmlResult = CAST(
-            (SELECT id as 'Id', [type] AS 'Type' FROM CityType FOR XML PATH('CityType'), ROOT('Data')) AS nvarchar(4000))
+    SET @xmlResult = '<Data>' + CAST(
+            (SELECT id as 'Id', [type] AS 'Type' FROM CityType FOR XML PATH('CityType'), ROOT('CityTypes')) AS nvarchar(4000)) + '</Data>'
 END
 
 CREATE PROCEDURE [dbo].[proc_CityType@Update] @xmlData xml
@@ -186,8 +192,8 @@ END
 CREATE PROCEDURE [dbo].[proc_CityName@ReadAll] @xmlResult nvarchar(4000) OUTPUT 
 AS
 BEGIN
-    SET @xmlResult = CAST(
-            (SELECT id as 'Id', [name] AS 'Type' FROM City FOR XML PATH('CityName'), ROOT('Data')) AS nvarchar(4000))
+    SET @xmlResult = '<Data>' + CAST(
+            (SELECT id as 'Id', [name] AS 'Type' FROM City FOR XML PATH('CityName'), ROOT('CityNames')) AS nvarchar(4000)) + '</Data>'
 END
 
 CREATE PROCEDURE [dbo].[proc_CityName@Update] @xmlData xml
@@ -240,8 +246,8 @@ END
 CREATE PROCEDURE [dbo].[proc_Region@ReadAll] @xmlResult nvarchar(4000) OUTPUT 
 AS
 BEGIN
-    SET @xmlResult = CAST(
-            (SELECT id as 'Id', [type] AS 'Name' FROM CityType FOR XML PATH('Region'), ROOT('Data')) AS nvarchar(4000))
+    SET @xmlResult = '<Data>' + CAST(
+            (SELECT id as 'Id', [type] AS 'Name' FROM CityType FOR XML PATH('Region'), ROOT('Regions')) AS nvarchar(4000)) + '</Data>'
 END
 
 CREATE PROCEDURE [dbo].[proc_Region@Update] @xmlData xml
@@ -294,8 +300,8 @@ END
 CREATE PROCEDURE [dbo].[proc_StreetName@ReadAll] @xmlResult nvarchar(4000) OUTPUT 
 AS
 BEGIN
-    SET @xmlResult = CAST(
-            (SELECT id as 'Id', [name] AS 'Name' FROM StreetName FOR XML PATH('StreetName'), ROOT('Data')) AS nvarchar(4000))
+    SET @xmlResult = '<Data>' + CAST(
+            (SELECT id as 'Id', [name] AS 'Name' FROM StreetName FOR XML PATH('StreetName'), ROOT('StreetNames')) AS nvarchar(4000)) + '</Data>'
 END
 
 CREATE PROCEDURE [dbo].[proc_StreetName@Update] @xmlData xml
@@ -348,8 +354,8 @@ END
 CREATE PROCEDURE [dbo].[proc_StreetType@ReadAll] @xmlResult nvarchar(4000) OUTPUT 
 AS
 BEGIN
-    SET @xmlResult = CAST(
-            (SELECT id as 'Id', [type] AS 'Type' FROM StreetType FOR XML PATH('StreetType'), ROOT('Data')) AS nvarchar(4000))
+    SET @xmlResult = '<Data>' + CAST(
+            (SELECT id as 'Id', [type] AS 'Type' FROM StreetType FOR XML PATH('StreetType'), ROOT('StreetTypes')) AS nvarchar(4000)) + '</Data>'
 END
 
 CREATE PROCEDURE [dbo].[proc_StreetType@Update] @xmlData xml
@@ -402,8 +408,8 @@ END
 CREATE PROCEDURE [dbo].[proc_BuildingNumber@ReadAll] @xmlResult nvarchar(4000) OUTPUT 
 AS
 BEGIN
-    SET @xmlResult = CAST(
-            (SELECT id as 'Id', [number] AS 'Type' FROM BuildingNumber FOR XML PATH('BuildingNumber'), ROOT('Data')) AS nvarchar(4000))
+    SET @xmlResult = '<Data>' + CAST(
+            (SELECT id as 'Id', [number] AS 'Type' FROM BuildingNumber FOR XML PATH('BuildingNumber'), ROOT('BuildingNumbers')) AS nvarchar(4000)) + '</Data>'
 END
 
 CREATE PROCEDURE [dbo].[proc_BuildingNumber@Update] @xmlData xml

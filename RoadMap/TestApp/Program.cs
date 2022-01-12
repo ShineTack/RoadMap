@@ -19,6 +19,10 @@ namespace TestApp
                     "Data Source=(LocalDb)\\MSSqlLocalDb;Initial Catalog=Polyclinic;Integrated Security=True;",
                     Assembly.Load("Models").GetTypes());
             CRUDRepository repository = initializer.GetCRUDRepository();
+
+            var obj = repository.ReadById<CityType>(2);
+
+            Console.ReadLine();
         }
     }
 }
