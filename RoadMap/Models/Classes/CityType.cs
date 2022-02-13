@@ -17,5 +17,10 @@ namespace Models.Classes
         public int Id { get; set; }
         [XmlElement(ElementName = "Type")]
         public  string Type { get; set; }
+
+        public bool IsValid()
+        {
+            return Type != string.Empty && Type != null;
+        }
     }
 }

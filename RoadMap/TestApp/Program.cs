@@ -20,7 +20,63 @@ namespace TestApp
                     Assembly.Load("Models").GetTypes());
             CRUDRepository repository = initializer.GetCRUDRepository();
 
-            var obj = repository.ReadById<CityType>(2);
+            /*int patientId = repository.Create<Patient>(new Patient()
+            {
+                FullName = "Pavel",
+                AddressId = 15,
+                BirthDate = DateTime.Now.AddYears(-20),
+                Email = "tackshine@gmail.com"
+            });
+
+            int hospitalId = repository.Create<Hospital>(new Hospital()
+            { 
+                Name = "Gorodskaya bolnica",
+                AddressId = 18
+            });
+
+            int doctorSpecializationId = repository.Create<DoctorSpecialization>(new DoctorSpecialization() 
+            { 
+                Name = "Lor"
+            });
+
+            int doctorId = repository.Create<Doctor>(new Doctor() 
+            { 
+                FullName = "Aleksey",
+                AddressId = 19,
+                SpecializationId = doctorSpecializationId,
+                Email = "shinetack@gmail.com",
+                BirthDate = DateTime.Now.AddYears(-50),
+                HospitalId = hospitalId
+            });
+
+            int diseaseTypeId = repository.Create<DiseaseType>(new DiseaseType() 
+            { 
+                Type = "Bact"
+            });
+
+            int diseaseId = repository.Create<Disease>(new Disease() 
+            { 
+                Name = "Atit",
+                DiseaseTypeId = diseaseTypeId
+            });
+
+            int illnessCertificateId = repository.Create<IllnessCertificate>(new IllnessCertificate() 
+            { 
+                FirstVisit = DateTime.Now,
+                LastVisit = DateTime.Now,
+                DiseaseId = diseaseId,
+                DoctorId = doctorId,
+                PatientId = patientId
+            });
+
+            int noteIllnessCertificateId = repository.Create<NoteIllnessCertificate>(new NoteIllnessCertificate()
+            { 
+                Note = Guid.NewGuid().ToString(),
+                Date = DateTime.Now,
+                IllnessCertificateId = illnessCertificateId
+            });*/
+
+            var allInfo = repository.ReadAll<Infoses>();
 
             Console.ReadLine();
         }

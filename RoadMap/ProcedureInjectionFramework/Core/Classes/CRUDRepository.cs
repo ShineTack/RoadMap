@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ProcedureInjectionFramework.Attributes;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -14,15 +15,15 @@ namespace ProcedureInjectionFramework.Core.Classes
     {
         private DataStorage _dataStorage;
 
-        internal CRUDRepository (DataStorage dataStorage)
+        internal CRUDRepository(DataStorage dataStorage)
         {
             _dataStorage = dataStorage;
         }
 
-        public void Create<T>(T model)
+        public int Create<T>(T model)
         {
             SqlConnection conn = new SqlConnection(_dataStorage.ConnectionString);
-            string commandName = 
+            string commandName =
                 _dataStorage
                     .procs
                     .Where(proc => proc.ModelName == model.GetType().Name)
@@ -31,12 +32,15 @@ namespace ProcedureInjectionFramework.Core.Classes
             SqlCommand cmd = new SqlCommand(commandName, conn);
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.Add(new SqlParameter("@xmlData", ModelToXml<T>(model)));
+            cmd.Parameters.Add(new SqlParameter("@newId", SqlDbType.Int));
+            cmd.Parameters["@newId"].Direction = ParameterDirection.Output;
             try
             {
                 conn.Open();
                 cmd.ExecuteNonQuery();
+                return Convert.ToInt32(cmd.Parameters["@newId"].Value.ToString());
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
@@ -44,45 +48,46 @@ namespace ProcedureInjectionFramework.Core.Classes
             {
                 conn.Close();
             }
+            return -1;
         }
-        
+
         public T ReadById<T>(int id)
         {
-                SqlConnection conn = new SqlConnection(_dataStorage.ConnectionString);
-                string commandName = 
-                    _dataStorage
-                        .procs
-                        .Where(proc => proc.ModelName == typeof(T).Name)
-                        .Select(proc => proc.ReadProc)
-                        .ToArray()[0];
-                string xmlParameter = $"<Data><value>{id}</value></Data>";
-                SqlCommand cmd = new SqlCommand(commandName, conn);
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.Add(new SqlParameter("@xmlData", xmlParameter));
-                cmd.Parameters.Add(new SqlParameter("@xmlResult", SqlDbType.NVarChar, 4000));
-                cmd.Parameters["@xmlResult"].Direction = ParameterDirection.Output;
-                try
-                {
-                    conn.Open();
-                    cmd.ExecuteNonQuery();
-                    return XmlToModel<T>(cmd.Parameters["@xmlResult"].Value.ToString());
-                }
-                catch(Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
-                finally
-                {
-                    conn.Close();
-                }
+            SqlConnection conn = new SqlConnection(_dataStorage.ConnectionString);
+            string commandName =
+                _dataStorage
+                    .procs
+                    .Where(proc => proc.ModelName == typeof(T).Name)
+                    .Select(proc => proc.ReadProc)
+                    .ToArray()[0];
+            string xmlParameter = GetDataString(id, typeof(T));
+            SqlCommand cmd = new SqlCommand(commandName, conn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.Add(new SqlParameter("@xmlData", xmlParameter));
+            cmd.Parameters.Add(new SqlParameter("@xmlResult", SqlDbType.NVarChar, 4000));
+            cmd.Parameters["@xmlResult"].Direction = ParameterDirection.Output;
+            try
+            {
+                conn.Open();
+                cmd.ExecuteNonQuery();
+                return XmlToModel<T>(cmd.Parameters["@xmlResult"].Value.ToString());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                conn.Close();
+            }
 
-                return default;
+            return default;
         }
 
         public T ReadAll<T>()
         {
             SqlConnection conn = new SqlConnection(_dataStorage.ConnectionString);
-            string commandName = 
+            string commandName =
                 _dataStorage
                     .procs
                     .Where(proc => proc.ModelName == typeof(T).Name)
@@ -92,13 +97,20 @@ namespace ProcedureInjectionFramework.Core.Classes
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.Add(new SqlParameter("@xmlResult", SqlDbType.NVarChar, 4000));
             cmd.Parameters["@xmlResult"].Direction = ParameterDirection.Output;
+            foreach(Attribute attribute in typeof(T).GetCustomAttributes(true))
+            {
+                if(attribute is AdditionalParamsAttribute additional)
+                {
+                    cmd.Parameters.Add(new SqlParameter("@xmlData", GetDataString(0, typeof(T))));
+                }
+            }
             try
             {
                 conn.Open();
                 cmd.ExecuteNonQuery();
                 return XmlToModel<T>(cmd.Parameters["@xmlResult"].Value.ToString());
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
@@ -122,7 +134,7 @@ namespace ProcedureInjectionFramework.Core.Classes
                 conn.Open();
                 cmd.ExecuteNonQuery();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
@@ -134,7 +146,7 @@ namespace ProcedureInjectionFramework.Core.Classes
         public void Delete(dynamic model)
         {
             SqlConnection conn = new SqlConnection(_dataStorage.ConnectionString);
-            string commandName = 
+            string commandName =
                 _dataStorage
                     .procs
                     .Where(proc => proc.ModelName == model.GetType().Name)
@@ -149,7 +161,7 @@ namespace ProcedureInjectionFramework.Core.Classes
                 conn.Open();
                 cmd.ExecuteNonQuery();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
@@ -165,7 +177,7 @@ namespace ProcedureInjectionFramework.Core.Classes
             {
                 var serializer = new XmlSerializer(model.GetType());
                 serializer.Serialize(stringwriter, model);
-               return stringwriter.ToString();
+                return stringwriter.ToString();
             }
         }
 
@@ -175,6 +187,28 @@ namespace ProcedureInjectionFramework.Core.Classes
             {
                 return (T)new XmlSerializer(typeof(T)).Deserialize(reader);
             }
+        }
+
+        private string GetDataString(int id, Type type)
+        {
+            object[] arr = null;
+            string xmlParameter = $"<Data><value>{id}</value>";
+            foreach(Attribute att in type.GetCustomAttributes(true))
+            {
+                if(att is AdditionalParamsAttribute attribute)
+                {
+                    arr = attribute.Params;
+                } 
+            }
+            if(arr != null)
+            {
+                for(int i = 0; i < arr.Length; i++)
+                {
+                    xmlParameter += $"<value{i}>{arr[i]}</value{i}>";
+                }
+            }
+            xmlParameter += "</Data>";
+            return xmlParameter;
         }
     }
 }
